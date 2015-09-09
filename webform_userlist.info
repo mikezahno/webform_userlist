@@ -1,0 +1,6 @@
+name           = Webform userlist
+description    = Add list of drupal users to webforms
+package        = Webform
+files[]        = webform_userlist.module
+dependencies[] = webform
+core           = 7.x

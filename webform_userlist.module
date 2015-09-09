@@ -1,0 +1,42 @@
+<?php
+
+
+/**
+ * Adds a new pre-built list of options. Options will not be editable in webform frontend if using pre-built list.
+ */
+function webform_userlist_webform_select_options_info() {
+  $items = array();
+  $items['users'] = array(
+    'title' => t('Users'),
+    'options callback' => 'webform_userlist_users',
+  );
+  return $items;
+}
+
+/**
+ * Option list containing all logged in users except uid 1 (admin)
+ */
+function webform_userlist_users($component, $flat, $filter, $arguments) {
+  $all_users = entity_load('user');
+  foreach($all_users as $value) {
+    $user_list = (array)$value;
+    if($user_list['uid'] > 1) {
+      $user_names[$user_list['uid']] = $user_list['name'];
+    }
+  }
+  return $user_names;
+}
+
+/**
+ * Set the current logged in uid as default value of the userlist.
+ * Implements hook_form_alter().
+ */
+function webform_userlist_form_alter( &$form, &$form_state,$form_id ){
+  global $user;
+  $uid = $user->uid;
+
+  if ($form_id == 'webform_client_form_253' && $uid > 1) {
+      // edit component values like this:
+      $form['submitted']['benutzer']['#default_value'] = $uid;
+    }
+}
