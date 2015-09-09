@@ -6,37 +6,52 @@
  */
 function webform_userlist_webform_select_options_info() {
   $items = array();
-  $items['users'] = array(
-    'title' => t('Users'),
-    'options callback' => 'webform_userlist_users',
+  $items['user_roles'] = array(
+    'title' => t('User Roles'),
+    'options callback' => 'webform_userlist_webform_pre_build_list_user_roles',
   );
   return $items;
 }
 
-/**
- * Option list containing all logged in users except uid 1 (admin)
- */
-function webform_userlist_users($component, $flat, $filter, $arguments) {
-  $all_users = entity_load('user');
-  foreach($all_users as $value) {
-    $user_list = (array)$value;
-    if($user_list['uid'] > 1) {
-      $user_names[$user_list['uid']] = $user_list['name'];
-    }
-  }
-  return $user_names;
-}
+// /**
+//  * Option list containing all logged in users except uid 1 (admin)
+//  */
+// function webform_userlist_users($component, $flat, $filter, $arguments) {
+//   $all_users = entity_load('user');
+//   foreach($all_users as $value) {
+//     $user_list = (array)$value;
+//     if($user_list['uid'] > 1) {
+//       $user_names[$user_list['uid']] = $user_list['name'];
+//     }
+//   }
+//   return $user_names;
+// }
+
+// /**
+//  * Set the current logged in uid as default value of the userlist.
+//  * Implements hook_form_alter().
+//  */
+// function webform_userlist_form_alter( &$form, &$form_state,$form_id ){
+//   global $user;
+//   $uid = $user->uid;
+
+//   if ($form_id == 'webform_client_form_253' && $uid > 1) {
+//       // edit component values like this:
+//       $form['submitted']['benutzer']['#default_value'] = $uid;
+//     }
+// }
 
 /**
- * Set the current logged in uid as default value of the userlist.
- * Implements hook_form_alter().
+ * Build an options list to be used with webforms select list based in drupal roles
  */
-function webform_userlist_form_alter( &$form, &$form_state,$form_id ){
-  global $user;
-  $uid = $user->uid;
+function webform_userlist_webform_pre_build_list_user_roles() {
+    $roles = user_roles();
+    $contentarray = array();
+    $contentarray[0] = t("Select user role");
 
-  if ($form_id == 'webform_client_form_253' && $uid > 1) {
-      // edit component values like this:
-      $form['submitted']['benutzer']['#default_value'] = $uid;
-    }
+     foreach ($roles as $role) {
+            $contentarray[$role] = t($role);
+      }
+
+    return $contentarray;
 }
